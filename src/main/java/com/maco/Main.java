@@ -12,5 +12,7 @@ public class Main {
 
         SpotifyClient client = new SpotifyClient(spotifyConfig);
         client.authenticate();
+
+        //start the workflow to see if it works
     }
 }
