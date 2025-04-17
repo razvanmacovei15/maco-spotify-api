@@ -2,6 +2,7 @@ package com.maco.api.track;
 
 import com.maco.api.TimePeriod;
 import com.maco.api.annotations.TimeRange;
+import com.maco.api.interfaces.UserTopItems;
 import com.maco.auth.token.TokenManager;
 import com.maco.model.Track;
 import com.maco.model.TracksResponse;
@@ -9,38 +10,29 @@ import com.maco.service.SpotifyService;
 import com.maco.utils.SpotifyConstants;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Arrays;
 
-public class TrackService extends SpotifyService {
+public class TrackService extends SpotifyService implements UserTopItems<Track> {
     public TrackService(TokenManager tokenManager) {
         super(tokenManager);
     }
 
-    public Track[] getTopTracks() {
+    @Override
+    @TimeRange(TimePeriod.SHORT_TERM)
+    public List<Track> getTopItems(TimePeriod timePeriod, int limit, int offset) {
         try {
-            // Get the calling method
-            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            String callingClassName = stackTrace[3].getClassName();
-            String callingMethodName = stackTrace[3].getMethodName();
-
-            Class<?> callingClass = Class.forName(callingClassName);
-            Method callingMethod = callingClass.getMethod(callingMethodName);
-
-            // Get the annotation value
-            TimeRange timeRange = callingMethod.getAnnotation(TimeRange.class);
-            String timeRangeValue = timeRange != null ?
-                    timeRange.value().getValue() :
-                    TimePeriod.MEDIUM_TERM.getValue();
-
-            System.out.println("Using time range: " + timeRangeValue);
-
-            String url = SpotifyConstants.API_BASE_URL +
-                    SpotifyConstants.USER_TOP_TRACKS_URL +
-                    "?time_range=" + timeRangeValue;
+            String url = String.format("%s/me/top/tracks?time_range=%s&limit=%d&offset=%d",
+                SpotifyConstants.API_BASE_URL,
+                timePeriod.getValue(),
+                limit,
+                offset
+            );
 
             TracksResponse response = get(url, TracksResponse.class);
-            return response.getItems();
-        } catch (IOException | ClassNotFoundException | NoSuchMethodException e) {
-            throw new RuntimeException("Failed to get top tracks", e);
+            return Arrays.asList(response.getItems());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to fetch top tracks", e);
         }
     }
 }
