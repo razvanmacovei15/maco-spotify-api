@@ -2,6 +2,7 @@ package com.maco.auth.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 public class MyHttpClient {
     private final HttpClient client;
+    @Getter
     private final ObjectMapper objectMapper;
 
     public MyHttpClient() {

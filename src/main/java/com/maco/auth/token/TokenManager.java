@@ -97,6 +97,7 @@ public class TokenManager {
                 )
         );
     }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class TokenResponse {
         @JsonProperty
