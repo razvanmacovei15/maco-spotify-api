@@ -1,6 +1,5 @@
-package com.maco.auth.model;
+package com.maco.auth.token;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

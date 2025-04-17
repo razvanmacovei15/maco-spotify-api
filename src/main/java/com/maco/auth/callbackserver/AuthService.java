@@ -1,4 +1,4 @@
-package com.maco.auth.service;
+package com.maco.auth.callbackserver;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
