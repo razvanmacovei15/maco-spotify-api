@@ -9,12 +9,10 @@ import com.maco.spotify.auth.token.TokenManager;
 import com.maco.spotify.api.model.SpotifyTrack;
 import com.maco.spotify.api.model.SpotifyArtist;
 import com.maco.spotify.utils.Browser;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-@Slf4j
 public class SpotifyClient {
     private final SpotifyConfig clientConfig;
     private final TokenManager tokenManager;
@@ -32,16 +30,13 @@ public class SpotifyClient {
     public void authenticate() {
         try {
             String authUrl = clientConfig.createAuthorizationUrl();
-            log.info("Opening Spotify authentication URL...");
             Browser.openUrl(authUrl);
 
             String code = AuthCallbackService.callbackServer();
             tokenManager.authenticate(code);
 
             isAuthenticated = true;
-            log.info("Successfully authenticated with Spotify.");
         } catch (Exception e) {
-            log.error("Failed to authenticate with Spotify", e);
             throw new RuntimeException("Failed to authenticate with Spotify", e);
         }
     }
@@ -50,9 +45,7 @@ public class SpotifyClient {
         try {
             tokenManager.revokeToken();
             isAuthenticated = false;
-            log.info("Successfully de-authenticated from Spotify.");
         } catch (Exception e) {
-            log.error("Failed to de-authenticate from Spotify", e);
             throw new RuntimeException("Failed to de-authenticate from Spotify", e);
         }
     }
@@ -65,9 +58,7 @@ public class SpotifyClient {
 
     private void ensureTokenIsValid() {
         if (tokenManager.isTokenExpired()) {
-            log.info("Spotify token expired. Attempting to refresh...");
             tokenManager.refreshToken();
-            log.info("Token refreshed successfully.");
         }
     }
 
