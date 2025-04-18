@@ -14,17 +14,28 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class SpotifyClient {
+    private final long INACTIVITY_THRESHOLD = 3600000;
     private final SpotifyConfig clientConfig;
     private final TokenManager tokenManager;
     private final SpotifyTrackService spotifyTrackService;
     private final SpotifyArtistService spotifyArtistService;
     private boolean isAuthenticated = false;
+    private long lastAccessTime;
 
     public SpotifyClient(SpotifyConfig clientConfig) {
+        this.lastAccessTime = System.currentTimeMillis();
         this.clientConfig = clientConfig;
         this.tokenManager = new TokenManager(clientConfig);
         this.spotifyTrackService = new SpotifyTrackService(tokenManager);
         this.spotifyArtistService = new SpotifyArtistService(tokenManager);
+    }
+
+    private void updateLastAccessTime() {
+        this.lastAccessTime = System.currentTimeMillis();
+    }
+
+    private boolean isActive(){
+        return System.currentTimeMillis() - lastAccessTime < INACTIVITY_THRESHOLD;
     }
 
     public void authenticate() {
@@ -36,6 +47,7 @@ public class SpotifyClient {
             tokenManager.authenticate(code);
 
             isAuthenticated = true;
+            updateLastAccessTime();
         } catch (Exception e) {
             throw new RuntimeException("Failed to authenticate with Spotify", e);
         }
@@ -45,6 +57,7 @@ public class SpotifyClient {
         try {
             tokenManager.revokeToken();
             isAuthenticated = false;
+            updateLastAccessTime();
         } catch (Exception e) {
             throw new RuntimeException("Failed to de-authenticate from Spotify", e);
         }
@@ -65,6 +78,7 @@ public class SpotifyClient {
     private <T> T withAuthenticatedAccess(Supplier<T> action) {
         validateAuthentication();
         ensureTokenIsValid();
+        updateLastAccessTime();
         return action.get();
     }
 
