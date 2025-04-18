@@ -46,6 +46,19 @@ public class SpotifyClient {
         }
     }
 
+    public void deAuthenticate() {
+        try {
+            // Revoke the access token
+            tokenManager.revokeToken();
+            
+            // Clear the authentication state
+            isAuthenticated = false;
+            System.out.println("Successfully de-authenticated from Spotify!");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to de-authenticate from Spotify", e);
+        }
+    }
+
     public List<Track> getTopTracksLast4Weeks(int limit, int offset) {
         if (!isAuthenticated) {
             throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");

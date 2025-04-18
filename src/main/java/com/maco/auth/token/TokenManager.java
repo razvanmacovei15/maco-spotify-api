@@ -98,6 +98,27 @@ public class TokenManager {
         );
     }
 
+    public void revokeToken() throws IOException {
+        if (currentToken == null) {
+            return; // Nothing to revoke
+        }
+
+        Map<String, String> headers = createAuthHeaders();
+        Map<String, String> formData = Map.of(
+            "token", currentToken.getAccessToken()
+        );
+
+        httpClient.post(
+            "https://accounts.spotify.com/api/token/revoke",
+            headers,
+            formData,
+            String.class
+        );
+
+        // Clear the current token
+        currentToken = null;
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class TokenResponse {
         @JsonProperty
