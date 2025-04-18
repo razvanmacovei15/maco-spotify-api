@@ -1,9 +1,9 @@
 package com.maco.api.interfaces;
 
-import com.maco.api.TimePeriod;
+import com.maco.api.TimeRange;
 
 import java.util.List;
 
 public interface UserTopItems<T> {
-    List<T> getTopItems(TimePeriod timePeriod, int limit, int offset);
+    List<T> getTopItems(TimeRange tr, int limit, int offset);
 }

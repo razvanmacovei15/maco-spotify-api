@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Track {
+public class Artist {
     @JsonProperty("id")
     private String id;
 
@@ -25,30 +25,15 @@ public class Track {
     @JsonProperty("external_urls")
     private ExternalUrls externalUrls;
 
-    @JsonProperty("artists")
-    private Artist[] artists;
+    @JsonProperty("followers")
+    private Followers followers;
 
-    @JsonProperty("album")
-    private Album album;
+    @JsonProperty("genres")
+    private String[] genres;
 
-    @JsonProperty("duration_ms")
-    private long durationMs;
-
-    @JsonProperty("explicit")
-    private boolean explicit;
+    @JsonProperty("images")
+    private Image[] images;
 
     @JsonProperty("popularity")
     private int popularity;
-
-    @JsonProperty("preview_url")
-    private String previewUrl;
-
-    @JsonProperty("track_number")
-    private int trackNumber;
-
-    @JsonProperty("disc_number")
-    private int discNumber;
-
-    @JsonProperty("is_local")
-    private boolean isLocal;
 }

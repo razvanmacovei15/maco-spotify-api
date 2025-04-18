@@ -6,16 +6,10 @@ import lombok.Getter;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TracksResponse {
-    @JsonProperty("items")
-    private Track[] items;
+public class Followers {
+    @JsonProperty("href")
+    private String href;
 
     @JsonProperty("total")
     private int total;
-
-    @JsonProperty("limit")
-    private int limit;
-
-    @JsonProperty("offset")
-    private int offset;
-}
+} 

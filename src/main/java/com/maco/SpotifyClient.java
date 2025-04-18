@@ -1,27 +1,29 @@
 package com.maco;
 
-import com.maco.api.track.TrackService;
+import com.maco.api.TimeRange;
+import com.maco.api.services.TrackService;
+import com.maco.api.services.ArtistService;
 import com.maco.auth.config.SpotifyConfig;
 import com.maco.auth.callbackserver.AuthService;
 import com.maco.auth.token.TokenManager;
 import com.maco.model.Track;
-import com.maco.service.AnnotatedServiceInvoker;
+import com.maco.model.Artist;
 import com.maco.utils.Browser;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class SpotifyClient {
     private final SpotifyConfig clientConfig;
     private final TokenManager tokenManager;
     private final TrackService trackService;
+    private final ArtistService artistService;
     private boolean isAuthenticated = false;
 
     public SpotifyClient(SpotifyConfig clientConfig) {
         this.clientConfig = clientConfig;
         this.tokenManager = new TokenManager(clientConfig);
         this.trackService = new TrackService(tokenManager);
+        this.artistService = new ArtistService(tokenManager);
     }
 
     public void authenticate() {
@@ -44,11 +46,45 @@ public class SpotifyClient {
         }
     }
 
-    public List<Track> getTopTracksLast4Weeks() throws InvocationTargetException, IllegalAccessException {
+    public List<Track> getTopTracksLast4Weeks(int limit, int offset) {
         if (!isAuthenticated) {
             throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
         }
+        return trackService.getTopItems(TimeRange.SHORT_TERM, limit, offset);
+    }
 
-        return AnnotatedServiceInvoker.invokeAnnotatedMethod(trackService, List.class);
+    public List<Track> getTopTracksLast6Months(int limit, int offset){
+        if(!isAuthenticated) {
+            throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
+        }
+        return trackService.getTopItems(TimeRange.MEDIUM_TERM, limit, offset);
+    }
+
+    public List<Track> getTopTracksAllTime(int limit, int offset){
+        if(!isAuthenticated) {
+            throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
+        }
+        return trackService.getTopItems(TimeRange.LONG_TERM, limit, offset);
+    }
+
+    public List<Artist> getTopArtistsLast4Weeks(int limit, int offset) {
+        if (!isAuthenticated) {
+            throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
+        }
+        return artistService.getTopItems(TimeRange.SHORT_TERM, limit, offset);
+    }
+
+    public List<Artist> getTopArtistsLast6Months(int limit, int offset) {
+        if (!isAuthenticated) {
+            throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
+        }
+        return artistService.getTopItems(TimeRange.MEDIUM_TERM, limit, offset);
+    }
+
+    public List<Artist> getTopArtistsAllTime(int limit, int offset) {
+        if (!isAuthenticated) {
+            throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
+        }
+        return artistService.getTopItems(TimeRange.LONG_TERM, limit, offset);
     }
 }
