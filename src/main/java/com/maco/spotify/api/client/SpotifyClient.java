@@ -1,9 +1,11 @@
 package com.maco.spotify.api.client;
 
 import com.maco.spotify.api.enums.TimeRange;
+import com.maco.spotify.api.model.SpotifyUser;
 import com.maco.spotify.api.service.impl.SpotifyTrackService;
 import com.maco.spotify.api.service.impl.SpotifyArtistService;
 import com.maco.spotify.api.config.SpotifyConfig;
+import com.maco.spotify.api.service.impl.SpotifyUserService;
 import com.maco.spotify.auth.callback.AuthCallbackService;
 import com.maco.spotify.auth.token.TokenManager;
 import com.maco.spotify.api.model.SpotifyTrack;
@@ -19,6 +21,7 @@ public class SpotifyClient {
     private final TokenManager tokenManager;
     private final SpotifyTrackService spotifyTrackService;
     private final SpotifyArtistService spotifyArtistService;
+    private final SpotifyUserService spotifyUserService;
     private boolean isAuthenticated = false;
     private long lastAccessTime;
 
@@ -28,6 +31,7 @@ public class SpotifyClient {
         this.tokenManager = new TokenManager(clientConfig);
         this.spotifyTrackService = new SpotifyTrackService(tokenManager);
         this.spotifyArtistService = new SpotifyArtistService(tokenManager);
+        this.spotifyUserService = new SpotifyUserService(tokenManager);
     }
 
     private void updateLastAccessTime() {
@@ -80,6 +84,10 @@ public class SpotifyClient {
         ensureTokenIsValid();
         updateLastAccessTime();
         return action.get();
+    }
+
+    public SpotifyUser getUserDetails(){
+        return withAuthenticatedAccess(spotifyUserService::getUserDetails);
     }
 
     // Top Tracks
