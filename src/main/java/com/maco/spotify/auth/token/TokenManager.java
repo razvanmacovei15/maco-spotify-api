@@ -5,14 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maco.spotify.api.config.SpotifyConfig;
 import com.maco.spotify.auth.http.SpotifyHttpClient;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
 
+@Slf4j
 public class TokenManager {
     @Setter
     private SpotifyToken currentToken;
+
     private final SpotifyConfig config;
     private final SpotifyHttpClient httpClient;
 
@@ -23,6 +26,8 @@ public class TokenManager {
 
     public void authenticate(String code) {
         try {
+            log.info("Authenticating with Spotify using code: {}", code != null ? "[REDACTED]" : "null");
+
             Map<String, String> headers = createAuthHeaders();
             Map<String, String> formData = Map.of(
                     "grant_type", "authorization_code",
@@ -37,13 +42,16 @@ public class TokenManager {
                     TokenResponse.class
             );
 
-            setCurrentToken(new SpotifyToken(
+            this.currentToken = new SpotifyToken(
                     response.accessToken,
                     response.refreshToken,
                     response.expiresIn,
                     response.tokenType
-            ));
+            );
+
+            log.info("Authentication successful. Token acquired and stored.");
         } catch (IOException e) {
+            log.error("Failed to authenticate with Spotify", e);
             throw new RuntimeException("Failed to authenticate with Spotify", e);
         }
     }
@@ -54,6 +62,7 @@ public class TokenManager {
         }
 
         if (currentToken.isExpired()) {
+            log.info("Token expired. Refreshing...");
             refreshToken();
         }
 
@@ -66,6 +75,8 @@ public class TokenManager {
         }
 
         try {
+            log.info("Refreshing Spotify access token...");
+
             Map<String, String> headers = createAuthHeaders();
             Map<String, String> formData = Map.of(
                     "grant_type", "refresh_token",
@@ -79,65 +90,73 @@ public class TokenManager {
                     TokenResponse.class
             );
 
-            setCurrentToken(new SpotifyToken(
+            this.currentToken = new SpotifyToken(
                     response.accessToken,
                     response.refreshToken,
                     response.expiresIn,
                     response.tokenType
-            ));
+            );
+
+            log.info("Token refreshed successfully.");
         } catch (IOException e) {
-            throw new RuntimeException("Failed to refresh token", e);
+            log.error("Failed to refresh Spotify token", e);
+            throw new RuntimeException("Failed to refresh Spotify token", e);
         }
     }
 
     private Map<String, String> createAuthHeaders() {
+        String authValue = Base64.getEncoder().encodeToString(
+                (config.getClientId() + ":" + config.getClientSecret()).getBytes()
+        );
+
         return Map.of(
-                "Authorization", "Basic " + Base64.getEncoder().encodeToString(
-                        (config.getClientId() + ":" + config.getClientSecret()).getBytes()
-                )
+                "Authorization", "Basic " + authValue
         );
     }
 
     public void revokeToken() throws IOException {
         if (currentToken == null) {
-            return; // Nothing to revoke
+            log.warn("Attempted to revoke token, but no token is currently set.");
+            return;
         }
+
+        log.info("Revoking current Spotify access token...");
 
         Map<String, String> headers = createAuthHeaders();
         Map<String, String> formData = Map.of(
-            "token", currentToken.getAccessToken()
+                "token", currentToken.getAccessToken()
         );
 
         httpClient.post(
-            "https://accounts.spotify.com/api/token/revoke",
-            headers,
-            formData,
-            String.class
+                "https://accounts.spotify.com/api/token/revoke",
+                headers,
+                formData,
+                String.class
         );
 
-        // Clear the current token
         currentToken = null;
+        log.info("Token revoked and cleared from memory.");
     }
 
     public boolean isTokenExpired() {
-        if (currentToken == null) {
-            return true;
-        }
-        return currentToken.isExpired();
+        return currentToken == null || currentToken.isExpired();
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class TokenResponse {
-        @JsonProperty
+        @JsonProperty("access_token")
         public String accessToken;
-        @JsonProperty
+
+        @JsonProperty("refresh_token")
         public String refreshToken;
-        @JsonProperty
+
+        @JsonProperty("expires_in")
         public long expiresIn;
-        @JsonProperty
+
+        @JsonProperty("token_type")
         public String tokenType;
+
         @JsonProperty("scope")
-        private String scope;
+        public String scope;
     }
-    
 }

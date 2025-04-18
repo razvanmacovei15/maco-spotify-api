@@ -5,24 +5,35 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class Browser {
+
     public static void openUrl(String url) {
-        try {
-            if (Desktop.isDesktopSupported()) {
-                Desktop desktop = Desktop.getDesktop();
-                if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                    desktop.browse(new URI(url));
-                } else {
-                    System.err.println("Desktop browsing is not supported on this platform");
-                    System.out.println("Please visit this URL manually: " + url);
-                }
-            } else {
-                System.err.println("Desktop is not supported on this platform");
-                System.out.println("Please visit this URL manually: " + url);
-            }
-        } catch (IOException | URISyntaxException e) {
-            System.err.println("Failed to open browser: " + e.getMessage());
-            System.out.println("Please visit this URL manually: " + url);
+        if (!Desktop.isDesktopSupported()) {
+            log.warn("Desktop is not supported on this platform.");
+            printManualUrl(url);
+            return;
         }
+
+        Desktop desktop = Desktop.getDesktop();
+        if (!desktop.isSupported(Desktop.Action.BROWSE)) {
+            log.warn("Desktop browsing is not supported on this platform.");
+            printManualUrl(url);
+            return;
+        }
+
+        try {
+            desktop.browse(new URI(url));
+            log.info("Successfully opened URL: {}", url);
+        } catch (IOException | URISyntaxException e) {
+            log.error("Failed to open browser for URL: {}", url, e);
+            printManualUrl(url);
+        }
+    }
+
+    private static void printManualUrl(String url) {
+        System.out.println("Please visit this URL manually: " + url);
     }
 }

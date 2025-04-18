@@ -1,11 +1,10 @@
 package com.maco.spotify.auth.token;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.Instant;
+
 @Getter
-@Setter
 public class SpotifyToken {
     private final String accessToken;
     private final String refreshToken;
@@ -27,5 +26,14 @@ public class SpotifyToken {
 
     public String getAuthorizationHeader() {
         return tokenType + " " + accessToken;
+    }
+
+    @Override
+    public String toString() {
+        return "SpotifyToken{" +
+                "expiresIn=" + expiresIn +
+                ", createdAt=" + createdAt +
+                ", tokenType='" + tokenType + '\'' +
+                '}';
     }
 }
