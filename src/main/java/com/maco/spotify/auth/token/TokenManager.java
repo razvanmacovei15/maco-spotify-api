@@ -60,7 +60,7 @@ public class TokenManager {
         return currentToken;
     }
 
-    private void refreshToken() {
+    public void refreshToken() {
         if (currentToken == null || currentToken.getRefreshToken() == null) {
             throw new IllegalStateException("No refresh token available. Please re-authenticate.");
         }
@@ -119,6 +119,13 @@ public class TokenManager {
         currentToken = null;
     }
 
+    public boolean isTokenExpired() {
+        if (currentToken == null) {
+            return true;
+        }
+        return currentToken.isExpired();
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class TokenResponse {
         @JsonProperty
@@ -132,4 +139,5 @@ public class TokenManager {
         @JsonProperty("scope")
         private String scope;
     }
+    
 }

@@ -26,16 +26,19 @@ public class SpotifyClient {
         this.spotifyArtistService = new SpotifyArtistService(tokenManager);
     }
 
+    private void ensureTokenIsValid() {
+        if(tokenManager.isTokenExpired()) {
+            tokenManager.refreshToken();
+        }   
+    }
+
     public void authenticate() {
         try {
-            // 1. Create authorization URL
             String authUrl = clientConfig.createAuthorizationUrl();
             Browser.openUrl(authUrl);
 
-            // 2. Wait for callback and get authorization code
             String code = AuthCallbackService.callbackServer();
 
-            // 3. Exchange code for tokens
             tokenManager.authenticate(code);
 
             isAuthenticated = true;
@@ -48,10 +51,8 @@ public class SpotifyClient {
 
     public void deAuthenticate() {
         try {
-            // Revoke the access token
             tokenManager.revokeToken();
             
-            // Clear the authentication state
             isAuthenticated = false;
             System.out.println("Successfully de-authenticated from Spotify!");
         } catch (Exception e) {
@@ -60,6 +61,7 @@ public class SpotifyClient {
     }
 
     public List<SpotifyTrack> getTopTracksLast4Weeks(int limit, int offset) {
+        ensureTokenIsValid();
         if (!isAuthenticated) {
             throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
         }
@@ -67,6 +69,7 @@ public class SpotifyClient {
     }
 
     public List<SpotifyTrack> getTopTracksLast6Months(int limit, int offset){
+        ensureTokenIsValid();
         if(!isAuthenticated) {
             throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
         }
@@ -74,6 +77,7 @@ public class SpotifyClient {
     }
 
     public List<SpotifyTrack> getTopTracksAllTime(int limit, int offset){
+        ensureTokenIsValid();
         if(!isAuthenticated) {
             throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
         }
@@ -81,6 +85,7 @@ public class SpotifyClient {
     }
 
     public List<SpotifyArtist> getTopArtistsLast4Weeks(int limit, int offset) {
+        ensureTokenIsValid();
         if (!isAuthenticated) {
             throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
         }
@@ -88,6 +93,7 @@ public class SpotifyClient {
     }
 
     public List<SpotifyArtist> getTopArtistsLast6Months(int limit, int offset) {
+        ensureTokenIsValid();
         if (!isAuthenticated) {
             throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
         }
@@ -95,6 +101,7 @@ public class SpotifyClient {
     }
 
     public List<SpotifyArtist> getTopArtistsAllTime(int limit, int offset) {
+        ensureTokenIsValid();
         if (!isAuthenticated) {
             throw new IllegalStateException("Client is not authenticated. Please call authenticate() first.");
         }
