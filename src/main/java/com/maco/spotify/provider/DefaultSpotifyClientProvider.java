@@ -26,7 +26,7 @@ public class DefaultSpotifyClientProvider implements SpotifyClientProvider{
         for(Map.Entry<String, SpotifyClient> entry : clientConcurrentHashMap.entrySet()){
             SpotifyClient client = entry.getValue();
             if(!client.isActive()){
-                clientConcurrentHashMap.remove(entry.getKey());
+                removeClient(entry.getKey());
             }
         }
     }
