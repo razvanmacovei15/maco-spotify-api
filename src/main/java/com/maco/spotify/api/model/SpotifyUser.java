@@ -7,6 +7,8 @@ import com.maco.spotify.api.model.extra.Followers;
 import com.maco.spotify.api.model.extra.Image;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SpotifyUser {
@@ -43,4 +45,20 @@ public class SpotifyUser {
     @JsonProperty("external_urls")
     private ExternalUrls externalUrls;
 
+    @Override
+    public String toString() {
+        return "SpotifyUser{" +
+                "id='" + id + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", email='" + email + '\'' +
+                ", uri='" + uri + '\'' +
+                ", href='" + href + '\'' +
+                ", type='" + type + '\'' +
+                ", country='" + country + '\'' +
+                ", product='" + product + '\'' +
+                ", followers=" + followers +
+                ", images=" + Arrays.toString(images) +
+                ", externalUrls=" + externalUrls +
+                '}';
+    }
 }

@@ -11,11 +11,13 @@ import com.maco.spotify.auth.token.TokenManager;
 import com.maco.spotify.api.model.SpotifyTrack;
 import com.maco.spotify.api.model.SpotifyArtist;
 import com.maco.spotify.utils.Browser;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 public class SpotifyClient {
+    @Getter
     private final long INACTIVITY_THRESHOLD = 3600000;
     private final SpotifyConfig clientConfig;
     private final TokenManager tokenManager;
@@ -38,7 +40,7 @@ public class SpotifyClient {
         this.lastAccessTime = System.currentTimeMillis();
     }
 
-    private boolean isActive(){
+    public boolean isActive(){
         return System.currentTimeMillis() - lastAccessTime < INACTIVITY_THRESHOLD;
     }
 
