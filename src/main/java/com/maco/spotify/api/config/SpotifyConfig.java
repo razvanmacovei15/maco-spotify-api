@@ -36,6 +36,22 @@ public class SpotifyConfig {
             throw new RuntimeException("Failed to create authorization URL", e);
         }
     }
+    public String createAuthorizationUrlWithState(String state) {
+        try {
+            String encodedScopes = URLEncoder.encode(String.join(" ", scopes), StandardCharsets.UTF_8);
+            String encodedRedirectUri = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8);
+            String encodedState = URLEncoder.encode(state, StandardCharsets.UTF_8);
+
+            return "https://accounts.spotify.com/authorize" +
+                    "?client_id=" + clientId +
+                    "&response_type=code" +
+                    "&redirect_uri=" + encodedRedirectUri +
+                    "&scope=" + encodedScopes +
+                    "&state=" + encodedState;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create authorization URL", e);
+        }
+    }
 
     public static SpotifyConfig fromProperties(String propertiesPath) {
         Properties props = new Properties();
