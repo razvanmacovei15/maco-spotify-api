@@ -37,6 +37,7 @@ public class SpotifyClient {
     }
 
     public String getAuthUrl(){
+        //good change?
         return clientConfig.createAuthorizationUrl();
     }
 
