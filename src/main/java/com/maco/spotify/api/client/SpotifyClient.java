@@ -64,6 +64,12 @@ public class SpotifyClient {
         }
     }
 
+    public void authenticateWithCode(String code){
+        tokenManager.authenticate(code);
+        isAuthenticated = true;
+        updateLastAccessTime();
+    }
+
     public void deAuthenticate() {
         try {
             tokenManager.revokeToken();
