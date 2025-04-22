@@ -41,6 +41,10 @@ public class SpotifyClient {
         return clientConfig.createAuthorizationUrl();
     }
 
+    public String getAuthUrlWithState(String state){
+        return clientConfig.createAuthorizationUrlWithState(state);
+    }
+
     private void updateLastAccessTime() {
         this.lastAccessTime = System.currentTimeMillis();
     }
