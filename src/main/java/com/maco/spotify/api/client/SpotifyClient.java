@@ -36,6 +36,10 @@ public class SpotifyClient {
         this.spotifyUserService = new SpotifyUserService(tokenManager);
     }
 
+    public String getAuthUrl(){
+        return clientConfig.createAuthorizationUrl();
+    }
+
     private void updateLastAccessTime() {
         this.lastAccessTime = System.currentTimeMillis();
     }
