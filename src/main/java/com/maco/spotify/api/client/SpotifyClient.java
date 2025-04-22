@@ -20,6 +20,7 @@ public class SpotifyClient {
     @Getter
     private final long INACTIVITY_THRESHOLD = 3600000;
     private final SpotifyConfig clientConfig;
+    @Getter
     private final TokenManager tokenManager;
     private final SpotifyTrackService spotifyTrackService;
     private final SpotifyArtistService spotifyArtistService;

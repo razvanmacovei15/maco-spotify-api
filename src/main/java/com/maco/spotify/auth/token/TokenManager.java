@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maco.spotify.api.config.SpotifyConfig;
 import com.maco.spotify.auth.http.SpotifyHttpClient;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class TokenManager {
                     formData,
                     TokenResponse.class
             );
+            System.out.println(response.toString());
 
             setCurrentToken(new SpotifyToken(
                     response.accessToken,
@@ -138,6 +140,17 @@ public class TokenManager {
         public String tokenType;
         @JsonProperty("scope")
         private String scope;
+
+        @Override
+        public String toString() {
+            return "TokenResponse{" +
+                    "accessToken='" + accessToken + '\'' +
+                    ", refreshToken='" + refreshToken + '\'' +
+                    ", expiresIn=" + expiresIn +
+                    ", tokenType='" + tokenType + '\'' +
+                    ", scope='" + scope + '\'' +
+                    '}';
+        }
     }
 
 }

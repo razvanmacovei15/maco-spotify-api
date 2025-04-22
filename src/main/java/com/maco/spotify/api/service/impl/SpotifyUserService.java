@@ -22,8 +22,7 @@ public class SpotifyUserService extends SpotifyService {
     public SpotifyUser getUserDetails() {
         try {
             String url = SpotifyConstants.USER_DETAILS;
-            SpotifyUser user =  get(url, SpotifyUser.class);
-            return user;
+            return get(url, SpotifyUser.class);
         } catch (IOException e) {
             throw new RuntimeException("Failed to fetch user details", e);
         }
