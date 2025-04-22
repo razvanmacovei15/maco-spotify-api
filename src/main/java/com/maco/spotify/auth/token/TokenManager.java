@@ -43,7 +43,8 @@ public class TokenManager {
                     response.accessToken,
                     response.refreshToken,
                     response.expiresIn,
-                    response.tokenType
+                    response.tokenType,
+                    response.scope
             ));
         } catch (IOException e) {
             throw new RuntimeException("Failed to authenticate with Spotify", e);
@@ -85,7 +86,8 @@ public class TokenManager {
                     response.accessToken,
                     response.refreshToken,
                     response.expiresIn,
-                    response.tokenType
+                    response.tokenType,
+                    response.scope
             ));
         } catch (IOException e) {
             throw new RuntimeException("Failed to refresh token", e);

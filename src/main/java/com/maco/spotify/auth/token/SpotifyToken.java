@@ -11,13 +11,15 @@ public class SpotifyToken {
     private final long expiresIn;
     private final Instant createdAt;
     private final String tokenType;
+    private final String scope;
 
-    public SpotifyToken(String accessToken, String refreshToken, long expiresIn, String tokenType) {
+    public SpotifyToken(String accessToken, String refreshToken, long expiresIn, String tokenType, String scope) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiresIn = expiresIn;
         this.createdAt = Instant.now();
         this.tokenType = tokenType;
+        this.scope = scope;
     }
 
     public boolean isExpired() {
