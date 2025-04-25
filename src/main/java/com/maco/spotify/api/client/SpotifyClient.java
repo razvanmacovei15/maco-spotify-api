@@ -25,6 +25,7 @@ public class SpotifyClient {
     private final SpotifyTrackService spotifyTrackService;
     private final SpotifyArtistService spotifyArtistService;
     private final SpotifyUserService spotifyUserService;
+    @Getter
     private boolean isAuthenticated = false;
     private long lastAccessTime;
 
