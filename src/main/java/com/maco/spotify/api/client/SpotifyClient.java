@@ -11,21 +11,20 @@ import com.maco.spotify.auth.token.TokenManager;
 import com.maco.spotify.api.model.SpotifyTrack;
 import com.maco.spotify.api.model.SpotifyArtist;
 import com.maco.spotify.utils.Browser;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+@Getter
 public class SpotifyClient {
-    @Getter
     private final long INACTIVITY_THRESHOLD = 3600000;
     private final SpotifyConfig clientConfig;
-    @Getter
     private final TokenManager tokenManager;
     private final SpotifyTrackService spotifyTrackService;
     private final SpotifyArtistService spotifyArtistService;
     private final SpotifyUserService spotifyUserService;
-    @Getter
     private boolean isAuthenticated = false;
     private long lastAccessTime;
 
@@ -39,7 +38,6 @@ public class SpotifyClient {
     }
 
     public String getAuthUrl(){
-        //good change?
         return clientConfig.createAuthorizationUrl();
     }
 
