@@ -37,6 +37,8 @@ public class SpotifyToken {
                 "expiresIn=" + expiresIn +
                 ", createdAt=" + createdAt +
                 ", tokenType='" + tokenType + '\'' +
+                ", scope='" + scope + '\'' +
+                ", isExpired=" + isExpired() +
                 '}';
     }
 }
