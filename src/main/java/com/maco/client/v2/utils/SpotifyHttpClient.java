@@ -28,7 +28,7 @@ public class SpotifyHttpClient {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 
-    public static <T> T post(String url, Map<String, String> headers, Map<String, String> formData, Class<T> responseType) throws IOException {
+    public <T> T post(String url, Map<String, String> headers, Map<String, String> formData, Class<T> responseType) throws IOException {
         String formDataString = formData.entrySet().stream()
                 .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
                 .collect(Collectors.joining("&"));
@@ -55,7 +55,7 @@ public class SpotifyHttpClient {
         }
     }
 
-    public static String get(String url, Map<String, String> headers) throws IOException {
+    public String get(String url, Map<String, String> headers) throws IOException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()

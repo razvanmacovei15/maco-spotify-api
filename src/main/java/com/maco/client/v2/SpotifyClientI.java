@@ -36,6 +36,7 @@ public class SpotifyClientI implements SpotifyClient {
 
     private SpotifyToken token;
     private boolean isAuthenticated;
+    private SpotifyHttpClient spotifyHttpClient;
 
     private final SpotifyArtistsService spotifyArtistsService;
     private final SpotifyTracksService spotifyTracksService;
@@ -48,9 +49,10 @@ public class SpotifyClientI implements SpotifyClient {
         this.scopes = scopes;
         this.token = null;
         this.isAuthenticated = false;
-        this.spotifyTracksService = new SpotifyTracksService(clientId, clientSecret);
-        this.spotifyArtistsService = new SpotifyArtistsService(clientId, clientSecret);
-        this.spotifyUserService = new SpotifyUserService(clientId, clientSecret);
+        this.spotifyHttpClient = new SpotifyHttpClient();
+        this.spotifyTracksService = new SpotifyTracksService(spotifyHttpClient ,clientId, clientSecret);
+        this.spotifyArtistsService = new SpotifyArtistsService(spotifyHttpClient, clientId, clientSecret);
+        this.spotifyUserService = new SpotifyUserService(spotifyHttpClient, clientId, clientSecret);
     }
 
     public boolean isExpired() {
@@ -100,7 +102,7 @@ public class SpotifyClientI implements SpotifyClient {
             );
 
             log.info("Sending token request to Spotify");
-            TokenResponse response = SpotifyHttpClient.post(
+            TokenResponse response = spotifyHttpClient.post(
                     "https://accounts.spotify.com/api/token",
                     headers,
                     formData,
@@ -143,7 +145,7 @@ public class SpotifyClientI implements SpotifyClient {
                     "token", token.getAccessToken()
             );
 
-            SpotifyHttpClient.post(
+            spotifyHttpClient.post(
                     "https://accounts.spotify.com/api/token/revoke",
                     headers,
                     formData,
@@ -197,7 +199,7 @@ public class SpotifyClientI implements SpotifyClient {
                     "refresh_token", token.getRefreshToken()
             );
 
-            TokenResponse response = SpotifyHttpClient.post(
+            TokenResponse response = spotifyHttpClient.post(
                     "https://accounts.spotify.com/api/token",
                     headers,
                     formData,

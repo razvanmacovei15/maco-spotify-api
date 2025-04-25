@@ -10,16 +10,19 @@ import java.util.Map;
 
 public abstract class AbstractSpotifyService {
     protected final ObjectMapper objectMapper;
+    protected final SpotifyHttpClient spotifyHttpClient;
     protected final String clientId;
     protected final String clientSecret;
-    public AbstractSpotifyService(String clientId, String clientSecret) {
+
+    public AbstractSpotifyService(SpotifyHttpClient spotifyHttpClient,String clientId, String clientSecret) {
         this.objectMapper = new ObjectMapper();
+        this.spotifyHttpClient = spotifyHttpClient;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
 
     protected <T> T get(String url, Class<T> responseType) throws IOException {
-        String response = SpotifyHttpClient.get(url, createAuthHeaders());
+        String response = spotifyHttpClient.get(url, createAuthHeaders());
         return objectMapper.readValue(response, responseType);
     }
 

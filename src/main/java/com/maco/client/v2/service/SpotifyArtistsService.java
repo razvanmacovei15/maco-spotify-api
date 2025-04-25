@@ -6,14 +6,17 @@ import com.maco.client.v2.enums.TimeRange;
 import com.maco.client.v2.model.SpotifyArtist;
 import com.maco.client.v2.model.response.ArtistsResponse;
 import com.maco.client.v2.utils.SpotifyConstants;
+import com.maco.client.v2.utils.SpotifyHttpClient;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 public class SpotifyArtistsService extends AbstractSpotifyService{
-    public SpotifyArtistsService(String clientId, String clientSecret) {
-        super(clientId, clientSecret);
+
+
+    public SpotifyArtistsService(SpotifyHttpClient spotifyHttpClient, String clientId, String clientSecret) {
+        super(spotifyHttpClient, clientId, clientSecret);
     }
 
     public List<SpotifyArtist> getTopItems(TimeRange timeRange, int limit, int offset) {
