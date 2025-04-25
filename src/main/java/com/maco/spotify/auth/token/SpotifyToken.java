@@ -11,6 +11,7 @@ public class SpotifyToken {
     private final long expiresIn;
     private final Instant createdAt;
     private final String tokenType;
+    @Getter
     private final String scope;
 
     public SpotifyToken(String accessToken, String refreshToken, long expiresIn, String tokenType, String scope) {
