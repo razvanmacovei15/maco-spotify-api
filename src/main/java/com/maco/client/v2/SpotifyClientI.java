@@ -34,18 +34,20 @@ public class SpotifyClientI implements SpotifyClient {
     private final String redirectUri;
     private final String[] scopes;
 
-    private SpotifyToken token = null;
-    private boolean isAuthenticated = false;
+    private SpotifyToken token;
+    private boolean isAuthenticated;
 
     private final SpotifyArtistsService spotifyArtistsService;
     private final SpotifyTracksService spotifyTracksService;
     private final SpotifyUserService spotifyUserService;
 
-    private SpotifyClientI(String clientId, String clientSecret, String redirectUri, String[] scopes) {
+    public SpotifyClientI(String clientId, String clientSecret, String redirectUri, String[] scopes) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
         this.scopes = scopes;
+        this.token = null;
+        this.isAuthenticated = false;
         this.spotifyTracksService = new SpotifyTracksService(clientId, clientSecret);
         this.spotifyArtistsService = new SpotifyArtistsService(clientId, clientSecret);
         this.spotifyUserService = new SpotifyUserService(clientId, clientSecret);
