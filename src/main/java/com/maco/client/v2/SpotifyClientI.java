@@ -11,7 +11,9 @@ import com.maco.client.v2.service.SpotifyTracksService;
 import com.maco.client.v2.service.SpotifyUserService;
 import com.maco.client.v2.utils.SpotifyHttpClient;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -24,7 +26,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 @Slf4j
-@Getter
+@Data
 @AllArgsConstructor
 public class SpotifyClientI implements SpotifyClient {
     private final String clientId;
@@ -35,15 +37,18 @@ public class SpotifyClientI implements SpotifyClient {
     private SpotifyToken token = null;
     private boolean isAuthenticated = false;
 
-    private final SpotifyArtistsService spotifyArtistsService = new SpotifyArtistsService(clientId, clientSecret);
-    private final SpotifyTracksService spotifyTracksService = new SpotifyTracksService(clientId, clientSecret);
-    private final SpotifyUserService spotifyUserService = new SpotifyUserService(clientId, clientSecret);
+    private final SpotifyArtistsService spotifyArtistsService;
+    private final SpotifyTracksService spotifyTracksService;
+    private final SpotifyUserService spotifyUserService;
 
-    private SpotifyClientI(Builder builder) {
-        this.clientId = builder.clientId;
-        this.clientSecret = builder.clientSecret;
-        this.redirectUri = builder.redirectUri;
-        this.scopes = builder.scopes;
+    private SpotifyClientI(String clientId, String clientSecret, String redirectUri, String[] scopes) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.redirectUri = redirectUri;
+        this.scopes = scopes;
+        this.spotifyTracksService = new SpotifyTracksService(clientId, clientSecret);
+        this.spotifyArtistsService = new SpotifyArtistsService(clientId, clientSecret);
+        this.spotifyUserService = new SpotifyUserService(clientId, clientSecret);
     }
 
     public boolean isExpired() {
@@ -268,45 +273,45 @@ public class SpotifyClientI implements SpotifyClient {
         return withAuthenticatedAccess(() -> spotifyArtistsService.getTopItems(TimeRange.LONG_TERM, limit, offset));
     }
 
-    public static class Builder {
-        private String clientId;
-        private String clientSecret;
-        private String redirectUri;
-        private String[] scopes;
-
-        public Builder withClientId(String clientId){
-            this.clientId = clientId;
-            return this;
-        }
-        public Builder withClientSecret(String clientSecret){
-            this.clientSecret = clientSecret;
-            return this;
-        }
-        public Builder withRedirectUri(String redirectUri){
-            this.redirectUri = redirectUri;
-            return this;
-        }
-        public Builder withScopes(String[] scopes){
-            this.scopes = scopes;
-            return this;
-        }
-
-        public SpotifyClientI build(){
-            validateConfig();
-            return new SpotifyClientI(this);
-        }
-
-        private void validateConfig() {
-            if(clientId == null || clientId.isEmpty()){
-                throw new IllegalStateException("clientId must be provided!");
-            }
-            if(clientSecret == null || clientSecret.isEmpty()){
-                throw new IllegalStateException("clientSecret must be provided!");
-            }
-            if(redirectUri == null || redirectUri.isEmpty()){
-                throw new IllegalStateException("redirectUri must be provided!");
-            }
-        }
-    }
+//    public static class Builder {
+//        private String clientId;
+//        private String clientSecret;
+//        private String redirectUri;
+//        private String[] scopes;
+//
+//        public Builder withClientId(String clientId){
+//            this.clientId = clientId;
+//            return this;
+//        }
+//        public Builder withClientSecret(String clientSecret){
+//            this.clientSecret = clientSecret;
+//            return this;
+//        }
+//        public Builder withRedirectUri(String redirectUri){
+//            this.redirectUri = redirectUri;
+//            return this;
+//        }
+//        public Builder withScopes(String[] scopes){
+//            this.scopes = scopes;
+//            return this;
+//        }
+//
+//        public SpotifyClientI build(){
+//            validateConfig();
+//            return new SpotifyClientI(this);
+//        }
+//
+//        private void validateConfig() {
+//            if(clientId == null || clientId.isEmpty()){
+//                throw new IllegalStateException("clientId must be provided!");
+//            }
+//            if(clientSecret == null || clientSecret.isEmpty()){
+//                throw new IllegalStateException("clientSecret must be provided!");
+//            }
+//            if(redirectUri == null || redirectUri.isEmpty()){
+//                throw new IllegalStateException("redirectUri must be provided!");
+//            }
+//        }
+//    }
 
 }
