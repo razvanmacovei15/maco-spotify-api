@@ -19,4 +19,7 @@ public class SpotifyToken {
     private String scope;
     private Instant createdAt;
 
+    public String getAuthorizationHeader() {
+        return tokenType + " " + accessToken;
+    }
 }

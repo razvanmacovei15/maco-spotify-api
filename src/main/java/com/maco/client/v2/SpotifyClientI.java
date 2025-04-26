@@ -50,9 +50,9 @@ public class SpotifyClientI implements SpotifyClient {
         this.token = null;
         this.isAuthenticated = false;
         this.spotifyHttpClient = new SpotifyHttpClient();
-        this.spotifyTracksService = new SpotifyTracksService(spotifyHttpClient ,clientId, clientSecret);
-        this.spotifyArtistsService = new SpotifyArtistsService(spotifyHttpClient, clientId, clientSecret);
-        this.spotifyUserService = new SpotifyUserService(spotifyHttpClient, clientId, clientSecret);
+        this.spotifyTracksService = new SpotifyTracksService(spotifyHttpClient ,clientId, clientSecret, null);
+        this.spotifyArtistsService = new SpotifyArtistsService(spotifyHttpClient, clientId, clientSecret, null);
+        this.spotifyUserService = new SpotifyUserService(spotifyHttpClient, clientId, clientSecret, null);
     }
 
     public boolean isExpired() {
@@ -64,6 +64,12 @@ public class SpotifyClientI implements SpotifyClient {
                 "Authorization", "Basic " + Base64.getEncoder().encodeToString(
                         (clientId + ":" + clientSecret).getBytes()
                 )
+        );
+    }
+
+    private Map<String, String> createHeaders() {
+        return Map.of(
+                "Authorization", token.getAuthorizationHeader()
         );
     }
 
@@ -88,6 +94,12 @@ public class SpotifyClientI implements SpotifyClient {
         } catch (Exception e) {
             throw new RuntimeException("Failed to create authorization URL", e);
         }
+    }
+
+    private void setHeaders(){
+        spotifyArtistsService.setHeaders(createHeaders());
+        spotifyTracksService.setHeaders(createHeaders());
+        spotifyUserService.setHeaders(createHeaders());
     }
 
     @Override
@@ -125,6 +137,7 @@ public class SpotifyClientI implements SpotifyClient {
             );
             this.token = newToken;
             this.isAuthenticated = true;
+            setHeaders();
             log.info("Authentication successful. Token set: {}", newToken);
         } catch (IOException e) {
             log.error("Failed to authenticate with Spotify", e);
@@ -181,6 +194,7 @@ public class SpotifyClientI implements SpotifyClient {
         );
         this.token = newToken;
         this.isAuthenticated = true;
+        setHeaders();
         log.info("Token set successfully: {}", newToken);
     }
 
@@ -217,6 +231,7 @@ public class SpotifyClientI implements SpotifyClient {
             );
             this.token = newToken;
             log.info("Token refreshed successfully: {}", newToken);
+            setHeaders();
             return newToken;
         } catch (IOException e) {
             log.error("Failed to refresh token", e);
