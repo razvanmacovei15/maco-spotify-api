@@ -4,9 +4,36 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.maco</groupId>
-    <artifactId>maco-spotify-api</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>com.macocoding</groupId>
+    <artifactId>spotify-api</artifactId>
+    <version>2.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Spotify-Api</name>
+    <description>Spotify API for Java</description>
+    <url>https://spotify-api.macocoding.com</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Razvan Macovei</name>
+            <email>razvanmc15@gmail.com</email>
+            <organization>MacoCoding</organization>
+            <organizationUrl>"null"</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/razvanmacovei15/maco-spotify-api</connection>
+        <developerConnection>scm:git:ssh://github.com:razvanmacovei15/maco-spotify-api.git</developerConnection>
+        <url>http://github.com/razvanmacovei15/maco-spotify-api/</url>
+    </scm>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
