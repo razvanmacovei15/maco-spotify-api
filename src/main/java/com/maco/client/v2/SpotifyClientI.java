@@ -11,10 +11,7 @@ import com.maco.client.v2.service.SpotifyArtistsService;
 import com.maco.client.v2.service.SpotifyTracksService;
 import com.maco.client.v2.service.SpotifyUserService;
 import com.maco.client.v2.utils.SpotifyHttpClient;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -43,10 +40,11 @@ public class SpotifyClientI implements SpotifyClient {
     private final SpotifyTracksService spotifyTracksService;
     private final SpotifyUserService spotifyUserService;
 
+    @Setter
     private TokenUpdateListener tokenUpdateListener;
 
 
-    public SpotifyClientI(String clientId, String clientSecret, String redirectUri, String[] scopes, TokenUpdateListener tokenUpdateListener) {
+    public SpotifyClientI(String clientId, String clientSecret, String redirectUri, String[] scopes) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
@@ -57,8 +55,8 @@ public class SpotifyClientI implements SpotifyClient {
         this.spotifyTracksService = new SpotifyTracksService(spotifyHttpClient ,clientId, clientSecret, null);
         this.spotifyArtistsService = new SpotifyArtistsService(spotifyHttpClient, clientId, clientSecret, null);
         this.spotifyUserService = new SpotifyUserService(spotifyHttpClient, clientId, clientSecret, null);
-        this.tokenUpdateListener = tokenUpdateListener;
     }
+
 
     public boolean isExpired() {
         return Instant.now().isAfter(token.getCreatedAt().plusSeconds(token.getExpiresIn()));
