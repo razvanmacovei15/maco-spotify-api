@@ -2,6 +2,7 @@ package com.maco.client.v2;
 
 import com.maco.client.v2.enums.TimeRange;
 import com.maco.client.v2.interfaces.SpotifyClient;
+import com.maco.client.v2.interfaces.TokenUpdateListener;
 import com.maco.client.v2.model.SpotifyArtist;
 import com.maco.client.v2.model.SpotifyTrack;
 import com.maco.client.v2.model.SpotifyUser;
@@ -42,7 +43,10 @@ public class SpotifyClientI implements SpotifyClient {
     private final SpotifyTracksService spotifyTracksService;
     private final SpotifyUserService spotifyUserService;
 
-    public SpotifyClientI(String clientId, String clientSecret, String redirectUri, String[] scopes) {
+    private TokenUpdateListener tokenUpdateListener;
+
+
+    public SpotifyClientI(String clientId, String clientSecret, String redirectUri, String[] scopes, TokenUpdateListener tokenUpdateListener) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
@@ -53,6 +57,7 @@ public class SpotifyClientI implements SpotifyClient {
         this.spotifyTracksService = new SpotifyTracksService(spotifyHttpClient ,clientId, clientSecret, null);
         this.spotifyArtistsService = new SpotifyArtistsService(spotifyHttpClient, clientId, clientSecret, null);
         this.spotifyUserService = new SpotifyUserService(spotifyHttpClient, clientId, clientSecret, null);
+        this.tokenUpdateListener = tokenUpdateListener;
     }
 
     public boolean isExpired() {
@@ -231,6 +236,11 @@ public class SpotifyClientI implements SpotifyClient {
             );
             this.token = newToken;
             log.info("Token refreshed successfully: {}", newToken);
+
+            if (tokenUpdateListener != null) {
+                tokenUpdateListener.onTokenUpdated(newToken);
+            }
+
             setHeaders();
             return newToken;
         } catch (IOException e) {
