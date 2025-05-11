@@ -15,11 +15,23 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * A helper class that wraps HTTP requests to the Spotify Web API,
+ * including support for GET and POST operations with JSON/form-data handling.
+ */
 public class SpotifyHttpClient {
+
     private static HttpClient client;
+
+    /**
+     * Shared ObjectMapper configured with SNAKE_CASE naming strategy.
+     */
     @Getter
     private static ObjectMapper objectMapper;
 
+    /**
+     * Initializes the HTTP client and configures the JSON mapper.
+     */
     public SpotifyHttpClient() {
         client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(30))
@@ -28,6 +40,17 @@ public class SpotifyHttpClient {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 
+    /**
+     * Sends a POST request with form-encoded data and maps the response to a specified class.
+     *
+     * @param url          the request URL
+     * @param headers      HTTP headers to include
+     * @param formData     key-value pairs to be sent in the request body as x-www-form-urlencoded
+     * @param responseType the class to which the response body will be deserialized
+     * @param <T>          the type of the response object
+     * @return the deserialized response object
+     * @throws IOException if the request fails or JSON mapping fails
+     */
     public <T> T post(String url, Map<String, String> headers, Map<String, String> formData, Class<T> responseType) throws IOException {
         String formDataString = formData.entrySet().stream()
                 .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
@@ -45,7 +68,7 @@ public class SpotifyHttpClient {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if(response.statusCode() != 200) {
+            if (response.statusCode() != 200) {
                 throw new IOException("Unexpected response: " + response.statusCode() + " " + response.body());
             }
             return objectMapper.readValue(response.body(), responseType);
@@ -55,6 +78,14 @@ public class SpotifyHttpClient {
         }
     }
 
+    /**
+     * Sends a GET request to the specified URL and returns the raw response body.
+     *
+     * @param url     the request URL
+     * @param headers HTTP headers to include
+     * @return the response body as a String
+     * @throws IOException if the request fails
+     */
     public String get(String url, Map<String, String> headers) throws IOException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -67,7 +98,7 @@ public class SpotifyHttpClient {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if(response.statusCode() != 200) {
+            if (response.statusCode() != 200) {
                 throw new IOException("Unexpected response: " + response.statusCode() + " " + response.body());
             }
             return response.body();

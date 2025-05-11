@@ -1,6 +1,7 @@
 package com.maco.client.v2;
 
 import com.maco.client.v2.enums.TimeRange;
+import com.maco.client.v2.interfaces.SpotifyClientInterface;
 import com.maco.client.v2.interfaces.TokenUpdateListener;
 import com.maco.client.v2.model.SpotifyArtist;
 import com.maco.client.v2.model.SpotifyTrack;
@@ -22,10 +23,54 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+
+/**
+ * Central class for interacting with the Spotify Web API.
+ * Handles authorization, token management (access and refresh), and provides access
+ * to top tracks, top artists, and user profile endpoints via wrapped services.
+ *
+ * <p>This client supports:
+ * <ul>
+ *     <li>Authorization Code Flow (OAuth 2.0)</li>
+ *     <li>Token refresh and revocation</li>
+ *     <li>Scope-based authorization</li>
+ *     <li>Customizable listeners for token updates</li>
+ * </ul>
+ *
+ * <p>Example usage:
+ * <pre>{@code
+ * SpotifyClient client = new SpotifyClient(clientId, clientSecret, redirectUri, scopes);
+ * client.authenticate(authCode);
+ * List<SpotifyTrack> topTracks = client.getTopTracksLast4Weeks(10, 0);
+ * }</pre>
+ *
+ * <p>Core methods provided by this class include:
+ * <ul>
+ *     <li>{@link #authenticate(String)} - Authenticate using authorization code.</li>
+ *     <li>{@link #deAuthenticate()} - Revoke authentication and clear tokens.</li>
+ *     <li>{@link #refreshAccessToken()} - Refresh the access token using refresh token.</li>
+ *     <li>{@link #getAuthorizationUrl(String)} - Generate Spotify authorization URL.</li>
+ *     <li>{@link #getCurrentUserDetails()} - Retrieve authenticated user's profile details.</li>
+ *     <li>{@link #getTopTracksLast4Weeks(int, int)} - Retrieve user's top tracks from the past 4 weeks.</li>
+ *     <li>{@link #getTopTracksLast6Months(int, int)} - Retrieve user's top tracks from the past 6 months.</li>
+ *     <li>{@link #getTopTracksAllTime(int, int)} - Retrieve user's all-time top tracks.</li>
+ *     <li>{@link #getTopArtistsLast4Weeks(int, int)} - Retrieve user's top artists from the past 4 weeks.</li>
+ *     <li>{@link #getTopArtistsLast6Months(int, int)} - Retrieve user's top artists from the past 6 months.</li>
+ *     <li>{@link #getTopArtistsAllTime(int, int)} - Retrieve user's all-time top artists.</li>
+ * </ul>
+ *
+ * <p>Token management is automated, with tokens refreshed as necessary.
+ * Ensure listeners are set if you need to react to token updates externally.
+ *
+ * @author maco
+ * @version 4.0.0
+ * @since 2025-05-11
+ */
+
 @Slf4j
 @Data
 @AllArgsConstructor
-public class SpotifyClient implements com.maco.client.v2.interfaces.SpotifyClient {
+public class SpotifyClient implements SpotifyClientInterface {
     private final String clientId;
     private final String clientSecret;
     private final String redirectUri;
@@ -42,7 +87,14 @@ public class SpotifyClient implements com.maco.client.v2.interfaces.SpotifyClien
     @Setter
     private TokenUpdateListener tokenUpdateListener;
 
-
+    /**
+     * Constructor for SpotifyClient.
+     *
+     * @param clientId     The client ID of the Spotify application.
+     * @param clientSecret The client secret of the Spotify application.
+     * @param redirectUri  The redirect URI for the Spotify application.
+     * @param scopes       The scopes required for authorization.
+     */
     public SpotifyClient(String clientId, String clientSecret, String redirectUri, String[] scopes) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
@@ -56,7 +108,11 @@ public class SpotifyClient implements com.maco.client.v2.interfaces.SpotifyClien
         this.spotifyUserService = new SpotifyUserService(spotifyHttpClient, clientId, clientSecret, null);
     }
 
-
+    /**
+     * Checks if the current access token is expired based on its creation time and expiration interval.
+     *
+     * @return true if the token is expired; false otherwise.
+     */
     public boolean isExpired() {
         return Instant.now().isAfter(token.getCreatedAt().plusSeconds(token.getExpiresIn()));
     }
@@ -298,46 +354,4 @@ public class SpotifyClient implements com.maco.client.v2.interfaces.SpotifyClien
     public List<SpotifyArtist> getTopArtistsAllTime(int limit, int offset) {
         return withAuthenticatedAccess(() -> spotifyArtistsService.getTopItems(TimeRange.LONG_TERM, limit, offset));
     }
-
-//    public static class Builder {
-//        private String clientId;
-//        private String clientSecret;
-//        private String redirectUri;
-//        private String[] scopes;
-//
-//        public Builder withClientId(String clientId){
-//            this.clientId = clientId;
-//            return this;
-//        }
-//        public Builder withClientSecret(String clientSecret){
-//            this.clientSecret = clientSecret;
-//            return this;
-//        }
-//        public Builder withRedirectUri(String redirectUri){
-//            this.redirectUri = redirectUri;
-//            return this;
-//        }
-//        public Builder withScopes(String[] scopes){
-//            this.scopes = scopes;
-//            return this;
-//        }
-//
-//        public SpotifyClientI build(){
-//            validateConfig();
-//            return new SpotifyClientI(this);
-//        }
-//
-//        private void validateConfig() {
-//            if(clientId == null || clientId.isEmpty()){
-//                throw new IllegalStateException("clientId must be provided!");
-//            }
-//            if(clientSecret == null || clientSecret.isEmpty()){
-//                throw new IllegalStateException("clientSecret must be provided!");
-//            }
-//            if(redirectUri == null || redirectUri.isEmpty()){
-//                throw new IllegalStateException("redirectUri must be provided!");
-//            }
-//        }
-//    }
-
 }
