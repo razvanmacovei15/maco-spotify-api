@@ -6,7 +6,7 @@
 
     <groupId>com.macocoding</groupId>
     <artifactId>spotify-api</artifactId>
-    <version>3.0.3</version>
+    <version>3.0.4</version>
     <packaging>jar</packaging>
 
     <name>Spotify-Api</name>
@@ -16,7 +16,7 @@
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -32,13 +32,15 @@
     <scm>
         <connection>scm:git:git://github.com/razvanmacovei15/maco-spotify-api</connection>
         <developerConnection>scm:git:ssh://github.com:razvanmacovei15/maco-spotify-api.git</developerConnection>
-        <url>http://github.com/razvanmacovei15/maco-spotify-api/</url>
+        <url>https://github.com/razvanmacovei15/maco-spotify-api/</url>
     </scm>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.boot.version>3.2.5</spring.boot.version> <!-- or lowest version you support -->
+
     </properties>
     <dependencies>
         <dependency>
@@ -56,6 +58,17 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.32</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>3.2.5</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     <build>

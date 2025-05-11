@@ -1,7 +1,6 @@
 package com.maco.client.v2;
 
 import com.maco.client.v2.enums.TimeRange;
-import com.maco.client.v2.interfaces.SpotifyClient;
 import com.maco.client.v2.interfaces.TokenUpdateListener;
 import com.maco.client.v2.model.SpotifyArtist;
 import com.maco.client.v2.model.SpotifyTrack;
@@ -26,7 +25,7 @@ import java.util.function.Supplier;
 @Slf4j
 @Data
 @AllArgsConstructor
-public class SpotifyClientI implements SpotifyClient {
+public class SpotifyClient implements com.maco.client.v2.interfaces.SpotifyClient {
     private final String clientId;
     private final String clientSecret;
     private final String redirectUri;
@@ -44,7 +43,7 @@ public class SpotifyClientI implements SpotifyClient {
     private TokenUpdateListener tokenUpdateListener;
 
 
-    public SpotifyClientI(String clientId, String clientSecret, String redirectUri, String[] scopes) {
+    public SpotifyClient(String clientId, String clientSecret, String redirectUri, String[] scopes) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
