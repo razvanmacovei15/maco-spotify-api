@@ -26,7 +26,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>com.macocoding.spotify-api</groupId>
     <artifactId>spotify-api</artifactId>
-    <version>4.0.1</version>
+    <version>4.0.2</version>
 </dependency>
 ```
 
