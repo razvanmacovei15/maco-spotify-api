@@ -54,4 +54,32 @@ public class SpotifyArtistsService extends AbstractSpotifyService {
             throw new RuntimeException("Failed to fetch top artists", e);
         }
     }
+
+    /**
+     * Searches for artists based on the provided name.
+     *
+     * @param artistName the name of the artist to search for
+     * @param type       the type of item to search for (e.g., artist)
+     * @param limit      the maximum number of items to return
+     * @param offset     the index of the first item to return (for pagination)
+     * @return a list of {@link SpotifyArtist} matching the search criteria
+     * @throws RuntimeException if the API call fails or the response cannot be parsed
+     */
+    public List<SpotifyArtist> searchForArtist(String artistName, String type, int limit, int offset) {
+        try {
+            String url = String.format("%s%s?q=%s&type=%s&limit=%d&offset=%d",
+                    SpotifyConstants.API_BASE_URL,
+                    SpotifyConstants.SEARCH_URL,
+                    artistName,
+                    type,
+                    limit,
+                    offset
+            );
+
+            ArtistsResponse response = get(url, ArtistsResponse.class, headers);
+            return Arrays.asList(response.getItems());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to search for artists", e);
+        }
+    }
 }

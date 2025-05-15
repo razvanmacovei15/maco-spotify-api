@@ -57,6 +57,7 @@ import java.util.function.Supplier;
  *     <li>{@link #getTopArtistsLast4Weeks(int, int)} - Retrieve user's top artists from the past 4 weeks.</li>
  *     <li>{@link #getTopArtistsLast6Months(int, int)} - Retrieve user's top artists from the past 6 months.</li>
  *     <li>{@link #getTopArtistsAllTime(int, int)} - Retrieve user's all-time top artists.</li>
+ *     <li>{@link #searchForArtist(String)} - Search for an artist by name.</li>
  * </ul>
  *
  * <p>Token management is automated, with tokens refreshed as necessary.
@@ -353,5 +354,9 @@ public class SpotifyClient implements SpotifyClientInterface {
     @Override
     public List<SpotifyArtist> getTopArtistsAllTime(int limit, int offset) {
         return withAuthenticatedAccess(() -> spotifyArtistsService.getTopItems(TimeRange.LONG_TERM, limit, offset));
+    }
+
+    public List<SpotifyArtist> searchForArtist(String artistName) {
+       return withAuthenticatedAccess(() ->  spotifyArtistsService.searchForArtist(artistName, "artist", 1, 0));
     }
 }

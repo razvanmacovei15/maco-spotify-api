@@ -32,6 +32,11 @@ public class SpotifyConstants {
     public static final String USER_TOP_ARTISTS_URL = "/me/top/artists";
 
     /**
+     * Endpoint path for search.
+     */
+    public static final String SEARCH_URL = "/search";
+
+    /**
      * Private constructor to prevent instantiation.
      */
     private SpotifyConstants() {
