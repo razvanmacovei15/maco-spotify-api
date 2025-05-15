@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.function.Supplier;
 
 
@@ -355,8 +356,9 @@ public class SpotifyClient implements SpotifyClientInterface {
     public List<SpotifyArtist> getTopArtistsAllTime(int limit, int offset) {
         return withAuthenticatedAccess(() -> spotifyArtistsService.getTopItems(TimeRange.LONG_TERM, limit, offset));
     }
-
+    @Override
     public List<SpotifyArtist> searchForArtist(String artistName) {
        return withAuthenticatedAccess(() ->  spotifyArtistsService.searchForArtist(artistName, "artist", 1, 0));
     }
+
 }

@@ -6,7 +6,7 @@
 
     <groupId>com.macocoding.spotify-api</groupId>
     <artifactId>spotify-api</artifactId>
-    <version>4.0.5</version>
+    <version>4.0.7</version>
     <packaging>jar</packaging>
 
     <name>Spotify-Api</name>

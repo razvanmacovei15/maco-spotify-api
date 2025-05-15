@@ -1,0 +1,69 @@
+package com.maco.client.v2;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maco.client.v2.model.SpotifyArtist;
+import com.maco.client.v2.service.SpotifyArtistsService;
+import com.maco.client.v2.utils.SpotifyHttpClient;
+
+import java.net.URI;
+import java.net.http.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.Base64;
+
+public class SpotifyConsoleApp {
+
+    public static void main(String[] args) throws Exception {
+        // TODO: Replace with your real Spotify app credentials
+        String clientId = "40f0faeac8b043ee99f7bd42e134f97c";
+        String clientSecret = "9713d372e12e4c699accf979bd406435";
+
+        // 1. Get access token
+        String accessToken = fetchAccessToken(clientId, clientSecret);
+
+        // 2. Prepare headers
+        Map<String, String> headers = Map.of(
+                "Authorization", "Bearer " + accessToken,
+                "Content-Type", "application/json"
+        );
+
+        // 3. Prepare HTTP + ObjectMapper (or use your SpotifyHttpClient if you need)
+        SpotifyHttpClient httpClient = new SpotifyHttpClient(); // your class
+
+        // 4. Create your service
+        SpotifyArtistsService artistService = new SpotifyArtistsService(httpClient, clientId, clientSecret, headers);
+
+        // 5. Search for artist
+        List<SpotifyArtist> results = artistService.searchForArtist("Pitbull", "artist", 5, 0);
+        for (SpotifyArtist artist : results) {
+            System.out.println("🎵 Name: " + artist.getName());
+            System.out.println("📀 Genres: " + String.join(", ", artist.getGenres() != null ? artist.getGenres() : new String[0]));
+            System.out.println("🔥 Popularity: " + artist.getPopularity());
+            System.out.println("🔗 Spotify URL: " + artist.getExternalUrls().getSpotify());
+            System.out.println("----------------------------------------------------");
+        }
+    }
+
+    private static String fetchAccessToken(String clientId, String clientSecret) throws Exception {
+        String credentials = clientId + ":" + clientSecret;
+        String encoded = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://accounts.spotify.com/api/token"))
+                .header("Authorization", "Basic " + encoded)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials"))
+                .build();
+
+        HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("Token fetch failed: " + response.body());
+        }
+
+        // crude JSON parsing
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readTree(response.body()).get("access_token").asText();
+    }
+}

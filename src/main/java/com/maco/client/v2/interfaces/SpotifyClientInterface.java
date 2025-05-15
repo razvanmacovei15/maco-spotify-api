@@ -124,4 +124,11 @@ public interface SpotifyClientInterface {
      * @return list of {@link SpotifyArtist}
      */
     List<SpotifyArtist> getTopArtistsAllTime(int limit, int offset);
+    /**
+     * Searches for artists based on the provided name.
+     *
+     * @param artistName the name of the artist to search for
+     * @return a list of {@link SpotifyArtist} matching the search criteria
+     */
+    List<SpotifyArtist> searchForArtist(String artistName);
 }

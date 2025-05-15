@@ -2,11 +2,15 @@ package com.maco.client.v2.service;
 
 import com.maco.client.v2.enums.TimeRange;
 import com.maco.client.v2.model.SpotifyArtist;
+import com.maco.client.v2.model.response.ArtistSearchResponse;
 import com.maco.client.v2.model.response.ArtistsResponse;
+import com.maco.client.v2.model.response.SearchWrapper;
 import com.maco.client.v2.utils.SpotifyConstants;
 import com.maco.client.v2.utils.SpotifyHttpClient;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -67,17 +71,18 @@ public class SpotifyArtistsService extends AbstractSpotifyService {
      */
     public List<SpotifyArtist> searchForArtist(String artistName, String type, int limit, int offset) {
         try {
+            String encodedArtistName = URLEncoder.encode(artistName, StandardCharsets.UTF_8);
             String url = String.format("%s%s?q=%s&type=%s&limit=%d&offset=%d",
                     SpotifyConstants.API_BASE_URL,
                     SpotifyConstants.SEARCH_URL,
-                    artistName,
+                    encodedArtistName,
                     type,
                     limit,
                     offset
             );
 
-            ArtistsResponse response = get(url, ArtistsResponse.class, headers);
-            return Arrays.asList(response.getItems());
+            SearchWrapper response = get(url, SearchWrapper.class, headers);
+            return Arrays.asList(response.getArtists().getItems());
         } catch (IOException e) {
             throw new RuntimeException("Failed to search for artists", e);
         }
