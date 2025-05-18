@@ -358,7 +358,7 @@ public class SpotifyClient implements SpotifyClientInterface {
     }
     @Override
     public List<SpotifyArtist> searchForArtist(String artistName) {
-       return withAuthenticatedAccess(() ->  spotifyArtistsService.searchForArtist(artistName, "artist", 1, 0));
+       return withAuthenticatedAccess(() ->  spotifyArtistsService.searchForArtist(artistName, "artist", 5, 0));
     }
 
 }
