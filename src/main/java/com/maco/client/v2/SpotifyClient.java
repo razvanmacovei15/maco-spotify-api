@@ -104,7 +104,7 @@ public class SpotifyClient implements SpotifyClientInterface {
         this.scopes = scopes;
         this.token = null;
         this.isAuthenticated = false;
-        this.spotifyHttpClient = new SpotifyHttpClient();
+        this.spotifyHttpClient = new SpotifyHttpClient(this);
         this.spotifyTracksService = new SpotifyTracksService(spotifyHttpClient ,clientId, clientSecret, null);
         this.spotifyArtistsService = new SpotifyArtistsService(spotifyHttpClient, clientId, clientSecret, null);
         this.spotifyUserService = new SpotifyUserService(spotifyHttpClient, clientId, clientSecret, null);

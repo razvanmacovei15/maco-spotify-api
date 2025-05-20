@@ -2,6 +2,7 @@ package com.maco.client.v2.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.maco.client.v2.SpotifyClient;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -28,11 +30,13 @@ public class SpotifyHttpClient {
      */
     @Getter
     private static ObjectMapper objectMapper;
+    private final SpotifyClient spotifyClient;
 
     /**
      * Initializes the HTTP client and configures the JSON mapper.
      */
-    public SpotifyHttpClient() {
+    public SpotifyHttpClient(SpotifyClient spotifyClient) {
+        this.spotifyClient = spotifyClient;
         client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(30))
                 .build();
@@ -87,6 +91,20 @@ public class SpotifyHttpClient {
      * @throws IOException if the request fails
      */
     public String get(String url, Map<String, String> headers) throws IOException {
+        try {
+            return executeGet(url, headers);
+        } catch (IOException e) {
+            if (e.getMessage().contains("401")) {
+                spotifyClient.refreshAccessToken(); // this also updates headers internally
+                Map<String, String> updatedHeaders = new HashMap<>(headers);
+                updatedHeaders.put("Authorization", spotifyClient.getAccessToken().getAuthorizationHeader());
+                return executeGet(url, updatedHeaders);
+            }
+            throw e;
+        }
+    }
+
+    private String executeGet(String url, Map<String, String> headers) throws IOException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
@@ -107,4 +125,5 @@ public class SpotifyHttpClient {
             throw new IOException("Request was interrupted", e);
         }
     }
+
 }
