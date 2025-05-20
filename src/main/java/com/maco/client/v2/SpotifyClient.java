@@ -86,8 +86,8 @@ public class SpotifyClient implements SpotifyClientInterface {
     private final SpotifyTracksService spotifyTracksService;
     private final SpotifyUserService spotifyUserService;
 
-    @Setter
     private TokenUpdateListener tokenUpdateListener;
+    private SpotifyToken currentToken;
 
     /**
      * Constructor for SpotifyClient.
@@ -104,8 +104,8 @@ public class SpotifyClient implements SpotifyClientInterface {
         this.scopes = scopes;
         this.token = null;
         this.isAuthenticated = false;
-        this.spotifyHttpClient = new SpotifyHttpClient();
-        this.spotifyTracksService = new SpotifyTracksService(spotifyHttpClient ,clientId, clientSecret, null);
+        this.spotifyHttpClient = new SpotifyHttpClient(clientId, clientSecret);
+        this.spotifyTracksService = new SpotifyTracksService(spotifyHttpClient, clientId, clientSecret, null);
         this.spotifyArtistsService = new SpotifyArtistsService(spotifyHttpClient, clientId, clientSecret, null);
         this.spotifyUserService = new SpotifyUserService(spotifyHttpClient, clientId, clientSecret, null);
     }
@@ -135,7 +135,7 @@ public class SpotifyClient implements SpotifyClientInterface {
 
     @Override
     public boolean isAuthenticated() {
-        return isAuthenticated;
+        return currentToken != null && currentToken.getAccessToken() != null;
     }
 
     @Override
@@ -359,6 +359,22 @@ public class SpotifyClient implements SpotifyClientInterface {
     @Override
     public List<SpotifyArtist> searchForArtist(String artistName) {
        return withAuthenticatedAccess(() ->  spotifyArtistsService.searchForArtist(artistName, "artist", 5, 0));
+    }
+
+    public void setTokenUpdateListener(TokenUpdateListener listener) {
+        this.tokenUpdateListener = listener;
+        // Set the listener for all services
+        spotifyArtistsService.setTokenUpdateListener(listener);
+        spotifyTracksService.setTokenUpdateListener(listener);
+        spotifyUserService.setTokenUpdateListener(listener);
+    }
+
+    public void setToken(SpotifyToken token) {
+        this.currentToken = token;
+        // Set the token for all services
+        spotifyArtistsService.setToken(token);
+        spotifyTracksService.setToken(token);
+        spotifyUserService.setToken(token);
     }
 
 }

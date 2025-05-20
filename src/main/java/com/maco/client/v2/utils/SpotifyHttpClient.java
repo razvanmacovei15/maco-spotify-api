@@ -2,7 +2,11 @@ package com.maco.client.v2.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.maco.client.v2.SpotifyToken;
+import com.maco.client.v2.interfaces.TokenUpdateListener;
+import com.maco.client.v2.model.response.TokenResponse;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,6 +16,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.Base64;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -22,6 +28,8 @@ import java.util.stream.Collectors;
 public class SpotifyHttpClient {
 
     private static HttpClient client;
+    private final String clientId;
+    private final String clientSecret;
 
     /**
      * Shared ObjectMapper configured with SNAKE_CASE naming strategy.
@@ -29,15 +37,70 @@ public class SpotifyHttpClient {
     @Getter
     private static ObjectMapper objectMapper;
 
+    @Setter
+    private TokenUpdateListener tokenUpdateListener;
+    @Setter
+    private SpotifyToken currentToken;
+
     /**
      * Initializes the HTTP client and configures the JSON mapper.
      */
-    public SpotifyHttpClient() {
+    public SpotifyHttpClient(String clientId, String clientSecret) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
         client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(30))
                 .build();
         objectMapper = new ObjectMapper();
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    }
+
+    private boolean isTokenExpired() {
+        if (currentToken == null || currentToken.getCreatedAt() == null) {
+            return true;
+        }
+        return Instant.now().isAfter(
+            currentToken.getCreatedAt().plusSeconds(currentToken.getExpiresIn() - 60)
+        );
+    }
+
+    private void refreshToken() throws IOException {
+        if (currentToken == null || currentToken.getRefreshToken() == null) {
+            throw new IOException("No refresh token available");
+        }
+
+        Map<String, String> headers = Map.of(
+            "Content-Type", "application/x-www-form-urlencoded",
+            "Authorization", "Basic " + Base64.getEncoder().encodeToString(
+                (clientId + ":" + clientSecret).getBytes()
+            )
+        );
+
+        Map<String, String> formData = Map.of(
+            "grant_type", "refresh_token",
+            "refresh_token", currentToken.getRefreshToken()
+        );
+
+        TokenResponse response = post(
+            SpotifyConstants.AUTH_BASE_URL + "/api/token",
+            headers,
+            formData,
+            TokenResponse.class
+        );
+
+        SpotifyToken newToken = new SpotifyToken(
+            response.getAccessToken(),
+            currentToken.getRefreshToken(), // Keep the existing refresh token
+            response.getTokenType(),
+            response.getExpiresIn(),
+            response.getScope(),
+            Instant.now()
+        );
+
+        currentToken = newToken;
+        if (tokenUpdateListener != null) {
+            tokenUpdateListener.onTokenUpdated(newToken);
+        }
     }
 
     /**
@@ -87,6 +150,10 @@ public class SpotifyHttpClient {
      * @throws IOException if the request fails
      */
     public String get(String url, Map<String, String> headers) throws IOException {
+        if (isTokenExpired()) {
+            refreshToken();
+        }
+
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
@@ -98,6 +165,12 @@ public class SpotifyHttpClient {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 401) {
+                // Token might have expired between check and request
+                refreshToken();
+                // Retry the request with new token
+                return get(url, headers);
+            }
             if (response.statusCode() != 200) {
                 throw new IOException("Unexpected response: " + response.statusCode() + " " + response.body());
             }

@@ -6,7 +6,7 @@
 
     <groupId>com.macocoding.spotify-api</groupId>
     <artifactId>spotify-api</artifactId>
-    <version>4.0.8</version>
+    <version>4.0.11</version>
     <packaging>jar</packaging>
 
     <name>Spotify-Api</name>
@@ -71,6 +71,18 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <version>3.2.5</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

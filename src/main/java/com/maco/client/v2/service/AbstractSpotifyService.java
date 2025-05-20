@@ -1,6 +1,8 @@
 package com.maco.client.v2.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maco.client.v2.SpotifyToken;
+import com.maco.client.v2.interfaces.TokenUpdateListener;
 import com.maco.client.v2.utils.SpotifyHttpClient;
 import lombok.Setter;
 
@@ -47,7 +49,7 @@ public abstract class AbstractSpotifyService {
      * @param clientSecret      Spotify application client secret
      * @param headers           initial headers to use for requests
      */
-    public AbstractSpotifyService(SpotifyHttpClient spotifyHttpClient, String clientId, String clientSecret, Map<String, String> headers) {
+    protected AbstractSpotifyService(SpotifyHttpClient spotifyHttpClient, String clientId, String clientSecret, Map<String, String> headers) {
         this.objectMapper = new ObjectMapper();
         this.spotifyHttpClient = spotifyHttpClient;
         this.clientId = clientId;
@@ -81,5 +83,17 @@ public abstract class AbstractSpotifyService {
                         (clientId + ":" + clientSecret).getBytes()
                 )
         );
+    }
+
+    public void setToken(SpotifyToken token) {
+        spotifyHttpClient.setCurrentToken(token);
+        // Update headers with new token
+        headers = Map.of(
+            "Authorization", token.getAuthorizationHeader()
+        );
+    }
+
+    public void setTokenUpdateListener(TokenUpdateListener listener) {
+        spotifyHttpClient.setTokenUpdateListener(listener);
     }
 }
