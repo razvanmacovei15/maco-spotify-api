@@ -281,9 +281,13 @@ public class SpotifyClient implements SpotifyClientInterface {
             );
             log.info("Received refresh response: {}", response);
 
+            String finalRefreshToken = response.getRefreshToken() != null
+                    ? response.getRefreshToken()
+                    : token.getRefreshToken();
+
             SpotifyToken newToken = new SpotifyToken(
                     response.getAccessToken(),
-                    response.getRefreshToken(),
+                    finalRefreshToken,
                     response.getTokenType(),
                     response.getExpiresIn(),
                     response.getScope(),
@@ -303,6 +307,7 @@ public class SpotifyClient implements SpotifyClientInterface {
             throw new RuntimeException("Failed to refresh token", e);
         }
     }
+
 
     private <T> T withAuthenticatedAccess(Supplier<T> action) {
         validateAuthentication();
